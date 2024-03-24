@@ -1,19 +1,45 @@
+import {DataRate} from "../units/data-rate";
+import {TimeDelta, Timestamp} from "../units";
+
 export class LinkCapacityTracker {
-  public:
-    LinkCapacityTracker();
-~LinkCapacityTracker();
-  // Call when a new delay-based estimate is available.
-  void UpdateDelayBasedEstimate(Timestamp at_time,
-  DataRate delay_based_bitrate);
-  void OnStartingRate(DataRate start_rate);
-  void OnRateUpdate(absl::optional<DataRate> acknowledged,
-  DataRate target,
-  Timestamp at_time);
-  void OnRttBackoff(DataRate backoff_rate, Timestamp at_time);
-  DataRate estimate() const;
-  private:
-    FieldTrialParameter<TimeDelta> tracking_rate;
-  double capacity_estimate_bps_ = 0;
-  Timestamp last_link_capacity_update_ = Timestamp::MinusInfinity();
-  DataRate last_delay_based_estimate_ = DataRate::PlusInfinity();
-};
+  private capacityEstimateBps:f64 = 0.0;
+  private lastLinkCapacityUpdate:Timestamp = U64.MIN_VALUE;
+  private lastDelayBasedEstimate:DataRate = U64.MAX_VALUE;
+  private trackingRate: TimeDelta = 0;
+
+  constructor(trackingRate: i32) {
+    this.trackingRate = trackingRate;
+  }
+
+  updateDelayBasedEstimate(atTime: Timestamp, delayBasedBitrate: DataRate): void {
+    if(delayBasedBitrate < this.lastDelayBasedEstimate){
+      this.capacityEstimateBps = Math.min(this.capacityEstimateBps, delayBasedBitrate);
+      this.lastLinkCapacityUpdate = atTime;
+    }
+    this.lastDelayBasedEstimate = delayBasedBitrate;
+  }
+  onStartingRate(startRate: DataRate): void {
+    if (this.lastLinkCapacityUpdate === U64.MAX_VALUE)
+      this.capacityEstimateBps = <f64>startRate;
+  }
+  onRateUpdate(acknowledged:DataRate, target: DataRate, atTime: u64){
+    if(!acknowledged){
+      return;
+    }
+    const acknowledgedTarget:DataRate = Math.min(acknowledged, target);
+    if(acknowledgedTarget > <u64>this.capacityEstimateBps){
+      const delta:TimeDelta = atTime - this.lastLinkCapacityUpdate;
+      const alpha:f64 = delta>0&&delta<f64.MAX_VALUE?Math.exp(-<f64>delta/<f64>this.trackingRate):0.0;
+      this.capacityEstimateBps = alpha*this.capacityEstimateBps + (1-alpha)*<f64>acknowledgedTarget;
+    }
+    this.lastLinkCapacityUpdate = atTime;
+  }
+
+  onRttBackoff(backoffRate: DataRate, atTime: u64):void {
+    this.capacityEstimateBps = Math.min(this.capacityEstimateBps, <f64>backoffRate);
+    this.lastLinkCapacityUpdate = atTime;
+  }
+  estimate():DataRate{
+    return <DataRate>this.capacityEstimateBps;
+  }
+}
