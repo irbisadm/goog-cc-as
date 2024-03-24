@@ -1,5 +1,5 @@
-import {DataRate} from "../units/data-rate";
-import {TimeDelta, Timestamp} from "../units";
+import {DataRate} from "../../../../units/data-rate";
+import {TimeDelta, Timestamp} from "../../../../units";
 
 export class LinkCapacityTracker {
   private capacityEstimateBps:f64 = 0.0;

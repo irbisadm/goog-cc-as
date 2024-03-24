@@ -1,4 +1,4 @@
-import {DataRate, TimeDelta, Timestamp} from "../units";
+import {DataRate, TimeDelta, Timestamp} from "../../../../units";
 
 export class RttBasedBackoff {
   disabled: bool = false;
