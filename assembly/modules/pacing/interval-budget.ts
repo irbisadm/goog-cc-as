@@ -11,7 +11,7 @@ export class IntervalBudget {
     this.setTargetRateKbps(initialTargetRateKbps);
   }
 
-  private setTargetRateKbps(targetRateKbps: i32): void {
+  setTargetRateKbps(targetRateKbps: i32): void {
     this._targetRateKbps = targetRateKbps;
     this.maxBytesInBudget = (kWindowMs * targetRateKbps) / 8;
     this._bytesRemaining = Math.min(Math.max(-this.maxBytesInBudget, this._bytesRemaining), this.maxBytesInBudget);
