@@ -1,1 +1,1 @@
-export type Timestamp = u64;
+export type Timestamp = i64;

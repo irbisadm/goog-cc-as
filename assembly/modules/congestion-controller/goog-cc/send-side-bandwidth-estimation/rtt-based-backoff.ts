@@ -1,4 +1,5 @@
 import {DataRate, TimeDelta, Timestamp} from "../../../../units";
+import {RttBasedBackoffConfig} from "./rtt-based-backoff-config";
 
 export class RttBasedBackoff {
   disabled: bool = false;
@@ -33,12 +34,4 @@ export class RttBasedBackoff {
     const timeoutCorrection = Math.max(this.lastPacketSent - this.lastPropagationRttUpdate, 0);
     return this.lastPropagationRtt + timeoutCorrection;
   }
-}
-
-export interface RttBasedBackoffConfig {
-  disabled?: bool;
-  configuredLimit?: u32;
-  dropFraction?: f32;
-  dropInterval?: u32;
-  bandwidthFloor?: u32;
 }
