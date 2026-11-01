@@ -6,11 +6,25 @@ A port of libwebrtc's send-side congestion control (**GoogCC**) from C++ to [Ass
 
 The goal is to run the same bandwidth-estimation logic that Chromium uses — outside the browser and outside C++: in an SFU written in Node.js/Deno/Bun, in a browser-side simulator, or in a test harness that replays transport-feedback traces and plots the estimate against the real link capacity.
 
+## Verified bit-exact against upstream C++
+
+The port is checked against upstream C++ GoogCC (libwebrtc M154) by replaying the same controller input through both and comparing every `NetworkControlUpdate` (target rate, loss, RTT, pacer windows, congestion window, probe clusters):
+
+| Scenario | Updates | Port vs C++ |
+|---|---|---|
+| `capacity-steps` — 1000 → 500 → 2000 → 300 → 1500 kbps | 641 | identical |
+| `loss-10pct` — 2 Mbps, 200 ms, 10% loss (loss-based BWE v2) | 383 | identical |
+| `no-feedback` — no transport feedback, RTCP loss + REMB, then 15% loss | 189 | identical |
+| `route-change` — 200 kbps → 800 kbps route | 116 | identical |
+| `remb-cap` — REMB cap to 250 kbps and lifted | 107 | identical |
+
+The inputs are recorded from the scenario simulator. `npm run test:trace` (part of CI) checks the port against the stored C++ outputs in `tests/golden/`; `npm run trace:compare` rebuilds upstream GoogCC from `cpp/` (`tools/cpp-replay`) and compares live. See [tools/replay/readme.md](tools/replay/readme.md) for the trace format.
+
 ## Estimate vs. link capacity
 
 ![GoogCC target rate vs. link capacity](docs/estimate-vs-capacity.svg)
 
-GoogCC running on the test-only scenario simulator (`tests/assembly/scenario`) over a link whose capacity changes in steps, 50 ms one-way delay, 30 fps video. Regenerate with `npm run plot` (writes the SVG and `build/tools/estimate-vs-capacity.csv`). A comparison against C++ GoogCC on the same traffic is still to be done.
+GoogCC running on the test-only scenario simulator (`tests/assembly/scenario`) over a link whose capacity changes in steps, 50 ms one-way delay, 30 fps video. Regenerate with `npm run plot` (writes the SVG and `build/tools/estimate-vs-capacity.csv`). The same scenario's controller input replays bit-exactly through upstream C++ (see above).
 
 ## Upstream revision
 
@@ -109,6 +123,8 @@ npm test                        # compile and run every tests/assembly/**/*.spec
 node tests/run.js alr-detector  # only specs whose path contains "alr-detector"
 node tests/run.js units Clamp   # ...and only tests whose name contains "Clamp"
 npm run plot                    # docs/estimate-vs-capacity.svg from the scenario simulator
+npm run test:trace              # port vs stored upstream C++ outputs (tests/golden)
+npm run trace:compare           # port vs upstream C++ built from cpp/ (CMake, Ninja, system abseil)
 ```
 
 AssemblyScript projects can consume the sources directly: `ascMain` points to `assembly/index.ts`.
