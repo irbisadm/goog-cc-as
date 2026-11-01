@@ -117,7 +117,7 @@ export class GoogCcFieldTrials {
 
   probeController: ProbeControllerConfig = new ProbeControllerConfig();
   sendSideBandwidthEstimation: SendSideBandwidthEstimationConfig = new SendSideBandwidthEstimationConfig();
-  alrDetector: AlrDetectorConfig = new AlrDetectorConfig();
+  alrDetector: AlrDetectorConfig = AlrDetectorConfig.defaults();
   delayBasedBwe: DelayBasedBweConfig = new DelayBasedBweConfig();
   robustThroughputEstimator: RobustThroughputEstimatorSettings = new RobustThroughputEstimatorSettings();
   bitrateEstimator: BitrateEstimatorConfig = new BitrateEstimatorConfig();

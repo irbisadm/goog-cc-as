@@ -1,6 +1,9 @@
 // Port of modules/congestion_controller/goog_cc/alr_detector.{h,cc} @ M154.
 // AlrDetectorConfig is a private nested struct upstream, built from the
 // "WebRTC-AlrDetectorParameters" field trial; here it is passed explicitly.
+// Without field trials upstream still applies the default-on
+// "WebRTC-ProbingScreenshareBwe" settings (80% / 40% / -60%), so that is the
+// default here (AlrDetectorConfig.defaults()), not the struct's initializers.
 // RtcEventLog is not ported.
 import {IntervalBudget} from "../../pacing/interval-budget";
 import {AlrExperimentSettings} from "../../../rtc-base/experiments/alr-experiment";
@@ -17,6 +20,11 @@ export class AlrDetectorConfig {
   bandwidthUsageRatio: f64 = 0.65;
   startBudgetLevelRatio: f64 = 0.80;
   stopBudgetLevelRatio: f64 = 0.50;
+
+  // The configuration upstream builds without any field trials.
+  static defaults(): AlrDetectorConfig {
+    return AlrDetectorConfig.fromExperimentSettings(AlrExperimentSettings.defaultProbingScreenshareBwe());
+  }
 
   // Equivalent of GetConfigFromTrials() when an ALR experiment is active.
   static fromExperimentSettings(settings: AlrExperimentSettings): AlrDetectorConfig {
@@ -44,7 +52,7 @@ export class AlrDetector {
 
   constructor(env: Environment, config: AlrDetectorConfig | null = null) {
     this.env = env;
-    this.conf = config !== null ? config : new AlrDetectorConfig();
+    this.conf = config !== null ? config : AlrDetectorConfig.defaults();
   }
 
   onBytesSent(bytesSent: DataSize, sendTime: Timestamp): void {
