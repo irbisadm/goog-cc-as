@@ -19,8 +19,8 @@ node tests/run.js <spec> [test]   # filter by spec path substring, then by test 
 npm run asbuild                   # asc assembly/index.ts (debug + release) into build/
 npm run test:trace                # replay simulator traces through the port, compare with tests/golden (C++ outputs)
 npm run trace:compare             # same, against upstream C++ GoogCC built from cpp/ via tools/cpp-replay
-npm run trace:from-log -- a.rtc b.trace   # RtcEventLog -> trace (tools/event-log, needs ../rtc-event-log built)
-npm run test:tools                # node --test tools/event-log/*.test.ts (skip without rtc-event-log)
+npm run trace:from-log -- a.rtc b.trace   # RtcEventLog -> trace (tools/event-log, parser: @irbisadm/rtc-event-log)
+npm run test:tools                # node --test tools/event-log/*.test.ts
 ```
 
 `asbuild` only compiles exported *functions*; classes behind the `export *` in `assembly/index.ts` are not type-checked by it. AssemblyScript compiles code only when it is reached, so **the specs are the real compile check** — every ported class needs a spec that exercises it, generic helpers included (e.g. `TimeDelta.Millis<f64>`).
@@ -29,7 +29,7 @@ The test runner (`tests/run.js`) compiles each spec with `--bindings esm` into `
 
 ## Porting conventions
 
-- `cpp/` — local, **gitignored** blob-less sparse git clone of upstream (`https://webrtc.googlesource.com/src`), checked out at the pinned revision. Read the C++ (and its `*_unittest.cc`) before porting or changing a file; never edit it. Add directories with `git -C cpp sparse-checkout add /<dir>/`. To re-sync with a newer milestone: `git -C cpp fetch origin refs/branch-heads/<N>:refs/remotes/origin/branch-heads/<N>`, then `git -C cpp diff <old> <new> -- <ported files>` and port the changes. `cpp.d44ecfe7/` is the old snapshot (the previous pin) and can be deleted.
+- `cpp/` — local, **gitignored** blob-less sparse git clone of upstream (`https://webrtc.googlesource.com/src`), checked out at the pinned revision. Read the C++ (and its `*_unittest.cc`) before porting or changing a file; never edit it. Add directories with `git -C cpp sparse-checkout add /<dir>/`. To re-sync with a newer milestone: `git -C cpp fetch origin refs/branch-heads/<N>:refs/remotes/origin/branch-heads/<N>`, then `git -C cpp diff <old> <new> -- <ported files>` and port the changes.
 - One upstream `.h/.cc` pair → one `.ts` file, same relative path, `snake_case` → `kebab-case` (`goog_cc/alr_detector.cc` → `goog-cc/alr-detector.ts`). Helper classes stay in the file of their upstream `.cc`. First line: `// Port of <upstream path> @ M154.`; specs mirror under `tests/assembly/`.
 - Naming: members/methods → camelCase; `kConstant` names are kept.
 - **Units** (`assembly/units/`) are `i64` type aliases in upstream scale (Timestamp/TimeDelta µs, DataRate bps, DataSize bytes), ±infinity = `I64.MAX_VALUE`/`I64.MIN_VALUE`. Each alias has a same-named namespace mirroring the C++ API: `TimeDelta.Millis(x)`, `TimeDelta.ms(d)`, `DataRate.kbps<f64>(r)`, `DataRate.fromSizeAndDuration(size, dt)` (C++ `size / dt`), `DataRate.timeToSend(size, rate)`, `DataRate.mulTime(rate, dt)`. `<`, `>`, `min`, `max` work directly; `+`/`-` that may involve infinities must use `Unit.add`/`Unit.sub`; `unit * double` → `Unit.mulF`, `unit / unit` → `Unit.ratio`. Integer accessors round to nearest like upstream.

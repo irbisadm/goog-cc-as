@@ -128,9 +128,9 @@ node tests/run.js units Clamp   # ...and only tests whose name contains "Clamp"
 npm run plot                    # docs/estimate-vs-capacity.svg from the scenario simulator
 npm run test:trace              # port vs stored upstream C++ outputs (tests/golden)
 npm run trace:compare           # port vs upstream C++ built from cpp/ (CMake, Ninja, system abseil)
-npm run trace:from-log -- log.rtc out.trace   # RtcEventLog -> trace (needs rtc-event-log, see tools/replay/readme.md)
+npm run trace:from-log -- log.rtc out.trace   # RtcEventLog -> trace (see tools/replay/readme.md)
 node tools/replay/trace.mjs compare-file out.trace   # port vs upstream C++ for any trace
-npm run test:tools              # TransportFeedbackAdapter port + converter tests (skip without rtc-event-log)
+npm run test:tools              # TransportFeedbackAdapter port + converter tests
 ```
 
 AssemblyScript projects can consume the sources directly: `ascMain` points to `assembly/index.ts`.
