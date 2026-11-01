@@ -1,15 +1,13 @@
 // Port of part of modules/congestion_controller/rtp/transport_feedback_adapter_unittest.cc @ M154
 // (both feedback formats, as the upstream test parameter). Feedback packets
-// are built with the rtc-event-log RTCP classes; skipped without the parser.
+// are built with the rtc-event-log RTCP classes.
 
 import assert from "node:assert/strict";
 import {describe, test} from "node:test";
 
-import {loadRtcEventLog} from "./rtc-event-log.ts";
+import {rtcEventLog as lib} from "./rtc-event-log.ts";
 import {PacedPacketInfo, type PacketResult, TransportFeedbackAdapter} from "./transport-feedback-adapter.ts";
 
-const lib = await loadRtcEventLog();
-const skip = lib === null ? "rtc-event-log not available" : false;
 
 const ms = (v: number) => v * 1000;
 const kPacingInfo0 = Object.assign(new PacedPacketInfo(), {probeClusterId: 0, probeClusterMinProbes: 5, probeClusterMinBytes: 2000});
@@ -135,7 +133,7 @@ for (const rfc8888 of [false, true]) {
     return adapter.processTransportFeedback(feedback, receiveTime);
   }
 
-  describe(`TransportFeedbackAdapterTest/${name}`, {skip}, () => {
+  describe(`TransportFeedbackAdapterTest/${name}`, () => {
     test("AdaptsFeedbackAndPopulatesSendTimes", () => {
       const adapter = new TransportFeedbackAdapter();
       const packets = createPacketTemplates(2, 3);

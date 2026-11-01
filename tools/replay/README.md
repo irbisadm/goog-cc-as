@@ -44,17 +44,17 @@ node tools/replay/trace.mjs update-event-log-golden *.rtc   # store in tests/gol
   `feedback`/`loss`/`rtt`/`route` events (30 kbps min, 300 kbps start).
 - `transport-feedback-adapter.ts` ports `TransportFeedbackAdapter` (data in
   flight, prior unacked data, feedback-to-packet matching).
-- The parser is `@irbisadm/rtc-event-log` if installed, otherwise the build of
-  a sibling `../rtc-event-log` checkout (`yarn build` there); the tools and
-  `npm run test:tools` skip without it.
+- The parser is the `@irbisadm/rtc-event-log` devDependency.
 - One deliberate deviation: upstream computes receiver-report RTTs against the
   NTP clock of the machine running the analysis, so its output depends on when
   it runs; the converter maps log times to NTP with the latest outgoing sender
   report instead.
 
-`tests/golden/event-log/` holds traces converted from rtc-event-log's golden
-logs (written by the upstream encoder) with the upstream C++ outputs;
-`npm run test:trace` checks them too.
+`tests/golden/event-log/` holds rtc-event-log's golden logs (`seed-<N>.rtc`,
+written by the upstream encoder), the traces converted from them and the
+upstream C++ outputs; `npm run test:trace` checks the traces against the C++
+outputs and `npm run test:tools` checks that the converter reproduces the
+traces from the logs.
 
 ## Format (v2)
 

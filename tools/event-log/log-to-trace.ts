@@ -7,17 +7,13 @@
 import {readFileSync, writeFileSync} from "node:fs";
 
 import {LogBasedNetworkControllerSimulation} from "./log-simulation.ts";
-import {loadRtcEventLog} from "./rtc-event-log.ts";
+import {rtcEventLog} from "./rtc-event-log.ts";
 
 export async function logToTrace(bytes: Uint8Array): Promise<string> {
-  const lib = await loadRtcEventLog();
-  if (lib === null) {
-    throw new Error("rtc-event-log not found: install @irbisadm/rtc-event-log or build ../rtc-event-log");
-  }
-  const log = new lib.ParsedRtcEventLog();
+  const log = new rtcEventLog.ParsedRtcEventLog();
   const status = log.parseString(bytes);
   if (!status.ok()) throw new Error(`failed to parse the event log: ${status.message()}`);
-  const simulation = new LogBasedNetworkControllerSimulation(lib);
+  const simulation = new LogBasedNetworkControllerSimulation(rtcEventLog);
   simulation.processEventsInLog(log);
   return simulation.trace();
 }

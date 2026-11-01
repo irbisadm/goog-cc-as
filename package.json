@@ -29,6 +29,7 @@
     "test:tools": "node --test \"tools/event-log/*.test.ts\""
   },
   "devDependencies": {
+    "@irbisadm/rtc-event-log": "^0.1.0",
     "assemblyscript": "^0.27.25"
   }
 }
