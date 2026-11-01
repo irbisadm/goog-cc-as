@@ -28,7 +28,8 @@ Upstream: `branch-heads/8037` @ `7cb44cfa`. Paths are relative to upstream `src/
 | 5 | `RateControlSettings` (GoogCC parts), `CongestionWindowPushbackController` | `rtc_base/experiments/rate_control_settings`, `goog_cc/congestion_window_pushback_controller` | 164+75 | 6 | — || done |
 | 5 | `ProbeController` | `goog_cc/probe_controller` | 625 | 54 | network types || done |
 | 6 | `NetworkControllerInterface`, `GoogCcNetworkController` | `api/transport/network_control.h`, `goog_cc/goog_cc_network_control` | 150+682 | 27 | everything || done |
-| 7 | Trace replay harness, estimate-vs-capacity plot, comparison with C++ GoogCC @ M154 | — | — | — | 6 | |
+| 7 | Estimate-vs-capacity plot (`npm run plot`) | — | — | — | 6 | done |
+| 7 | Trace replay harness, comparison with C++ GoogCC @ M154 | — | — | — | 6 | |
 
 ## Notes
 

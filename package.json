@@ -20,7 +20,8 @@
     "test": "node tests/run.js",
     "asbuild:debug": "asc assembly/index.ts --target debug",
     "asbuild:release": "asc assembly/index.ts --target release",
-    "asbuild": "npm run asbuild:debug && npm run asbuild:release"
+    "asbuild": "npm run asbuild:debug && npm run asbuild:release",
+    "plot": "node tools/plot/plot.mjs"
   },
   "devDependencies": {
     "assemblyscript": "^0.27.25"

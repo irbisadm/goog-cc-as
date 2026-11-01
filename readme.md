@@ -6,6 +6,12 @@ A port of libwebrtc's send-side congestion control (**GoogCC**) from C++ to [Ass
 
 The goal is to run the same bandwidth-estimation logic that Chromium uses — outside the browser and outside C++: in an SFU written in Node.js/Deno/Bun, in a browser-side simulator, or in a test harness that replays transport-feedback traces and plots the estimate against the real link capacity.
 
+## Estimate vs. link capacity
+
+![GoogCC target rate vs. link capacity](docs/estimate-vs-capacity.svg)
+
+GoogCC running on the test-only scenario simulator (`tests/assembly/scenario`) over a link whose capacity changes in steps, 50 ms one-way delay, 30 fps video. Regenerate with `npm run plot` (writes the SVG and `build/tools/estimate-vs-capacity.csv`). A comparison against C++ GoogCC on the same traffic is still to be done.
+
 ## Upstream revision
 
 Ported from libwebrtc **M154** — `branch-heads/8037` @ [`7cb44cfa`](https://webrtc.googlesource.com/src/+/7cb44cfa6c40960ca8d2c1b3f04e2f9e81d35c61) (Chrome 154). GoogCC changes between releases, so compare results against C++ built from this revision. Every ported file starts with a header naming its upstream source and revision, e.g.
@@ -102,6 +108,7 @@ npm run asbuild                 # build/debug.wasm and build/release.wasm
 npm test                        # compile and run every tests/assembly/**/*.spec.ts
 node tests/run.js alr-detector  # only specs whose path contains "alr-detector"
 node tests/run.js units Clamp   # ...and only tests whose name contains "Clamp"
+npm run plot                    # docs/estimate-vs-capacity.svg from the scenario simulator
 ```
 
 AssemblyScript projects can consume the sources directly: `ascMain` points to `assembly/index.ts`.
