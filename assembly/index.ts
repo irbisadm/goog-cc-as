@@ -15,3 +15,11 @@ export * from "./modules/congestion-controller/goog-cc/acknowledged-bitrate-esti
 export * from "./modules/congestion-controller/goog-cc/robust-throughput-estimator";
 export * from "./modules/congestion-controller/goog-cc/link-capacity-estimator";
 export * from "./modules/congestion-controller/goog-cc/send-side-bandwidth-estimation";
+export * from "./api/transport/bandwidth-usage";
+export * from "./api/network-state-predictor";
+export * from "./modules/remote-bitrate-estimator/include/bwe-defines";
+export * from "./modules/remote-bitrate-estimator/aimd-rate-control";
+export * from "./modules/congestion-controller/goog-cc/delay-increase-detector-interface";
+export * from "./modules/congestion-controller/goog-cc/inter-arrival-delta";
+export * from "./modules/congestion-controller/goog-cc/trendline-estimator";
+export * from "./modules/congestion-controller/goog-cc/probe-bitrate-estimator";
