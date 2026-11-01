@@ -146,15 +146,17 @@ int main() {
         msg.pacer_queue = DataSize::Bytes(queue);
       update = controller->OnProcessInterval(msg);
     } else if (type == "sent") {
-      int64_t seq, size, in_flight;
+      int64_t seq, size, in_flight, prior_unacked;
       int cluster, min_probes, min_bytes;
-      in >> seq >> size >> in_flight >> cluster >> min_probes >> min_bytes;
+      in >> seq >> size >> in_flight >> cluster >> min_probes >> min_bytes >>
+          prior_unacked;
       webrtc::SentPacket msg;
       msg.send_time = at;
       msg.sequence_number = seq;
       msg.size = DataSize::Bytes(size);
       msg.data_in_flight = DataSize::Bytes(in_flight);
       msg.pacing_info = Pacing(cluster, min_probes, min_bytes);
+      msg.prior_unacked_data = DataSize::Bytes(prior_unacked);
       update = controller->OnSentPacket(msg);
     } else if (type == "feedback") {
       int64_t in_flight, n;
@@ -163,15 +165,16 @@ int main() {
       msg.feedback_time = at;
       msg.data_in_flight = DataSize::Bytes(in_flight);
       for (int64_t i = 0; i < n; ++i) {
-        int64_t seq, send_t, size, recv_t;
+        int64_t seq, send_t, size, recv_t, prior_unacked;
         int cluster, min_probes, min_bytes;
         in >> seq >> send_t >> size >> recv_t >> cluster >> min_probes >>
-            min_bytes;
+            min_bytes >> prior_unacked;
         webrtc::PacketResult r;
         r.sent_packet.sequence_number = seq;
         r.sent_packet.send_time = Timestamp::Micros(send_t);
         r.sent_packet.size = DataSize::Bytes(size);
         r.sent_packet.pacing_info = Pacing(cluster, min_probes, min_bytes);
+        r.sent_packet.prior_unacked_data = DataSize::Bytes(prior_unacked);
         r.receive_time =
             recv_t < 0 ? Timestamp::PlusInfinity() : Timestamp::Micros(recv_t);
         msg.packet_feedbacks.push_back(r);

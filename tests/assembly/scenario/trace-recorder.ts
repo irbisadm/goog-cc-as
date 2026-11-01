@@ -25,7 +25,7 @@ function us(t: Timestamp): string {
 }
 
 export class TraceRecorder {
-  private parts: string[] = ["# goog-cc-trace v1\n"];
+  private parts: string[] = ["# goog-cc-trace v2\n"];
 
   init(at: Timestamp, constraints: TargetRateConstraints, streams: StreamsConfig): void {
     const factor = streams.pacingFactor;
@@ -46,7 +46,7 @@ export class TraceRecorder {
   sent(packet: SentPacket): void {
     this.add("sent " + us(packet.sendTime) + " " + packet.sequenceNumber.toString() + " " +
       DataSize.bytes(packet.size).toString() + " " + DataSize.bytes(packet.dataInFlight).toString() + " " +
-      pacing(packet.pacingInfo));
+      pacing(packet.pacingInfo) + " " + DataSize.bytes(packet.priorUnackedData).toString());
   }
 
   feedback(msg: TransportPacketsFeedback): void {
@@ -56,7 +56,7 @@ export class TraceRecorder {
       const p = msg.packetFeedbacks[i];
       line += " " + p.sentPacket.sequenceNumber.toString() + " " + us(p.sentPacket.sendTime) + " " +
         DataSize.bytes(p.sentPacket.size).toString() + " " + (p.isReceived() ? us(p.receiveTime) : "-1") + " " +
-        pacing(p.sentPacket.pacingInfo);
+        pacing(p.sentPacket.pacingInfo) + " " + DataSize.bytes(p.sentPacket.priorUnackedData).toString();
     }
     this.add(line);
   }
