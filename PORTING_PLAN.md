@@ -30,7 +30,7 @@ Upstream: `branch-heads/8037` @ `7cb44cfa`. Paths are relative to upstream `src/
 | 6 | `NetworkControllerInterface`, `GoogCcNetworkController` | `api/transport/network_control.h`, `goog_cc/goog_cc_network_control` | 150+682 | 27 | everything || done |
 | 7 | Estimate-vs-capacity plot (`npm run plot`) | — | — | — | 6 | done |
 | 7 | Trace record/replay, C++ replay of upstream GoogCC (`tools/cpp-replay`), bit-exact comparison + golden outputs in CI | — | — | — | 6 | done |
-| 8 | Replay of real recordings (RtcEventLog parser) | — | — | — | 7 | |
+| 8 | Replay of real recordings (RtcEventLog parser) | — | — | — | 7 | done: `tools/event-log` (log simulation + TransportFeedbackAdapter ports), trace v2, `tests/golden/event-log` |
 
 ## Notes
 

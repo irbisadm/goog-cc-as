@@ -27,6 +27,35 @@ Both replays run with default field trials. If the simulator changes, the
 recorded traces change too, so `tests/golden/` must be refreshed with
 `update-golden` (which only stores outputs that the port matches).
 
+## Traces from RtcEventLog recordings
+
+`tools/event-log/` converts an RtcEventLog (new format) into a trace:
+
+```sh
+npm run trace:from-log -- log.rtc out.trace
+node tools/replay/trace.mjs compare-file out.trace          # port vs C++
+node tools/replay/trace.mjs update-event-log-golden *.rtc   # store in tests/golden/event-log/
+```
+
+- `log-simulation.ts` ports upstream `LogBasedNetworkControllerSimulation`
+  (`rtc_tools/rtc_event_log_visualizer/log_simulation.cc`): outgoing packet
+  infos, incoming transport feedback, receiver reports and selected ICE
+  candidate pairs, merged in log order, become `init`/`process`/`sent`/
+  `feedback`/`loss`/`rtt`/`route` events (30 kbps min, 300 kbps start).
+- `transport-feedback-adapter.ts` ports `TransportFeedbackAdapter` (data in
+  flight, prior unacked data, feedback-to-packet matching).
+- The parser is `@irbisadm/rtc-event-log` if installed, otherwise the build of
+  a sibling `../rtc-event-log` checkout (`yarn build` there); the tools and
+  `npm run test:tools` skip without it.
+- One deliberate deviation: upstream computes receiver-report RTTs against the
+  NTP clock of the machine running the analysis, so its output depends on when
+  it runs; the converter maps log times to NTP with the latest outgoing sender
+  report instead.
+
+`tests/golden/event-log/` holds traces converted from rtc-event-log's golden
+logs (written by the upstream encoder) with the upstream C++ outputs;
+`npm run test:trace` checks them too.
+
 ## Format (v2)
 
 Times in microseconds, rates in bps, sizes in bytes, `-1` = unset.

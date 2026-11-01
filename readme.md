@@ -20,6 +20,8 @@ The port is checked against upstream C++ GoogCC (libwebrtc M154) by replaying th
 
 The inputs are recorded from the scenario simulator. `npm run test:trace` (part of CI) checks the port against the stored C++ outputs in `tests/golden/`; `npm run trace:compare` rebuilds upstream GoogCC from `cpp/` (`tools/cpp-replay`) and compares live. See [tools/replay/README.md](tools/replay/README.md) for the trace format.
 
+RtcEventLog recordings can be replayed too: `npm run trace:from-log -- <log.rtc> <out.trace>` turns a log into a trace the way upstream's `LogBasedNetworkControllerSimulation` (`rtc_tools/rtc_event_log_visualizer`) feeds GoogCC, using the [rtc-event-log](https://github.com/irbisadm/rtc-event-log) parser. Eight logs written by the upstream encoder (`tests/golden/event-log/`) replay identically to C++; they exposed and fixed a wrong default of the ALR detector.
+
 ## Estimate vs. link capacity
 
 ![GoogCC target rate vs. link capacity](docs/estimate-vs-capacity.svg)
@@ -126,6 +128,9 @@ node tests/run.js units Clamp   # ...and only tests whose name contains "Clamp"
 npm run plot                    # docs/estimate-vs-capacity.svg from the scenario simulator
 npm run test:trace              # port vs stored upstream C++ outputs (tests/golden)
 npm run trace:compare           # port vs upstream C++ built from cpp/ (CMake, Ninja, system abseil)
+npm run trace:from-log -- log.rtc out.trace   # RtcEventLog -> trace (needs rtc-event-log, see tools/replay/README.md)
+node tools/replay/trace.mjs compare-file out.trace   # port vs upstream C++ for any trace
+npm run test:tools              # TransportFeedbackAdapter port + converter tests (skip without rtc-event-log)
 ```
 
 AssemblyScript projects can consume the sources directly: `ascMain` points to `assembly/index.ts`.
