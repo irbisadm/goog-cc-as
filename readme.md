@@ -117,6 +117,7 @@ Out-of-range values are handled as upstream does: they are rejected or replaced 
 ## Build and test
 
 ```sh
+nvm use                         # Node version from .nvmrc
 npm ci
 npm run asbuild                 # build/debug.wasm and build/release.wasm
 npm test                        # compile and run every tests/assembly/**/*.spec.ts

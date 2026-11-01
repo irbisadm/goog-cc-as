@@ -13,6 +13,7 @@ Port of libwebrtc's send-side congestion control (GoogCC) from C++ to AssemblySc
 ## Commands
 
 ```bash
+nvm use                           # Node version from .nvmrc (24.x); run before npm/node commands
 npm test                          # node tests/run.js: compile + run every tests/assembly/**/*.spec.ts
 node tests/run.js <spec> [test]   # filter by spec path substring, then by test name substring
 npm run asbuild                   # asc assembly/index.ts (debug + release) into build/
