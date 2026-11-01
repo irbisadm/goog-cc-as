@@ -96,8 +96,8 @@ const detector = new AlrDetector(createEnvironment(), config);
 
 | Field trial | Config | Defaults |
 |---|---|---|
-| `WebRTC-AlrDetectorParameters` | `AlrDetectorConfig` | `bw_usage` 0.65, `start` 0.80, `stop` 0.50 |
-| `WebRTC-ProbingScreenshareBwe`, `WebRTC-StrictPacingAndProbing` | `AlrDetectorConfig.fromExperimentSettings(AlrExperimentSettings)` | off |
+| `WebRTC-AlrDetectorParameters` | `AlrDetectorConfig` | `bw_usage` 0.80, `start` 0.40, `stop` -0.60 (`AlrDetectorConfig.defaults()`: upstream's struct defaults 0.65/0.80/0.50 are always overridden by the default-on screenshare experiment below) |
+| `WebRTC-ProbingScreenshareBwe`, `WebRTC-StrictPacingAndProbing` | `AlrDetectorConfig.fromExperimentSettings(AlrExperimentSettings)` | screenshare probing on with `1.0,2875,80,40,-60,3` (`AlrExperimentSettings.defaultProbingScreenshareBwe()`), strict pacing off |
 | `WebRTC-BweThroughputWindowConfig` | `BitrateEstimatorConfig` | `initial_window_ms` 500, `window_ms` 150 (both limited to 150..1000), `scale` 10, `scale_alr` = `scale`, `scale_small` = `scale`, `small_thresh` 0, `symmetry_cap` 0, `floor` 0 |
 | `WebRTC-Bwe-RobustThroughputEstimatorSettings` | `RobustThroughputEstimatorSettings` (call `validate()`) | `enabled` true, `window_packets` 20, `max_window_packets` 500, `window_duration` 1 s, `max_window_duration` 5 s, `required_packets` 10, `unacked_weight` 1.0 |
 | `WebRTC-Bwe-TrendlineEstimatorSettings`, `WebRTC-BweWindowSizeInPackets` | `TrendlineEstimatorSettings` (validated in the constructor) | `sort` false, `cap` false, `beginning_packets` 7, `end_packets` 7, `cap_uncertainty` 0.0, `window_size` 20 (10..200) |
