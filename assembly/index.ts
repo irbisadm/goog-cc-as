@@ -25,3 +25,6 @@ export * from "./modules/congestion-controller/goog-cc/trendline-estimator";
 export * from "./modules/congestion-controller/goog-cc/probe-bitrate-estimator";
 export * from "./modules/congestion-controller/goog-cc/delay-based-bwe";
 export * from "./modules/congestion-controller/goog-cc/loss-based-bwe-v2";
+export * from "./rtc-base/experiments/rate-control-settings";
+export * from "./modules/congestion-controller/goog-cc/congestion-window-pushback-controller";
+export * from "./modules/congestion-controller/goog-cc/probe-controller";
