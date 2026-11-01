@@ -1,5 +1,4 @@
-// The entry file of your WebAssembly module.
-
-export function add(a: i32, b: i32): i32 {
-  return a + b;
-}
+// Library entry point for AssemblyScript consumers (package.json "ascMain").
+// The public API grows as components are ported.
+export * from "./units";
+export * from "./types/optional";
