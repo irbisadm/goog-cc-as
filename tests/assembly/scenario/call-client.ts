@@ -57,6 +57,7 @@ import {BitrateEstimator} from "../../../assembly/modules/congestion-controller/
 import {SimEvent} from "./event-loop";
 import {NetworkNode, PacketKind, PacketSink, SimPacket, sendOnRoute} from "./network-node";
 import {Simulation} from "./simulation";
+import {TraceRecorder} from "./trace-recorder";
 
 const kProcessInterval: TimeDelta = TimeDelta.Millis(25);
 const kPacerTick: TimeDelta = TimeDelta.Millis(1);
@@ -88,6 +89,8 @@ export class CallClientConfig {
   resetOnAdapterIdChange: bool = false;
   // "WebRTC-Video-Pacing/factor:<f>/" (VideoSendStreamImpl PacingConfig).
   videoPacingFactor: Optional<f64> | null = null;
+  // Records every controller input as a goog-cc trace when set.
+  traceRecorder: TraceRecorder | null = null;
 }
 
 // The parts of VideoStreamConfig the simulator uses.
@@ -208,7 +211,6 @@ export class CallClient {
   private lastTargetRate: DataRate;
   private lastPacingRate: DataRate = DataRate.Zero;
   private lastPaddingRate: DataRate = DataRate.Zero;
-  private lastLossRateRatio: f64 = 0;
   private congestionWindow: Optional<DataSize> | null = null;
 
   // Encoder.
@@ -274,6 +276,11 @@ export class CallClient {
     controllerConfig.constraints = makeConstraints(config, now);
     controllerConfig.streamBasedConfig = makeStreamsConfig(config, video, now);
     this.controller = new GoogCcNetworkControllerFactory(null, config.fieldTrials).create(controllerConfig);
+    const recorder = config.traceRecorder;
+    if (recorder !== null) {
+      recorder.init(now, controllerConfig.constraints, controllerConfig.streamBasedConfig);
+      recorder.availability(now, true);
+    }
     this.receiverSink = new ReceiverSink(this);
     this.senderSink = new SenderSink(this);
 
@@ -306,11 +313,6 @@ export class CallClient {
     return this.lastTargetRate;
   }
 
-  // Debug helper: fraction loss of the last network estimate (0..255 scale).
-  debugFractionLoss(): f64 {
-    return this.lastLossRateRatio * 255;
-  }
-
   paddingRate(): DataRate {
     return this.lastPaddingRate;
   }
@@ -325,6 +327,8 @@ export class CallClient {
     const msg = new RemoteBitrateReport();
     msg.bandwidth = bitrate;
     msg.receiveTime = this.sim.now();
+    const recorder = this.config.traceRecorder;
+    if (recorder !== null) recorder.remb(msg.receiveTime, bitrate);
     this.applyUpdate(this.controller.onRemoteBitrateReport(msg));
   }
 
@@ -346,6 +350,8 @@ export class CallClient {
     // are tracked per route; packets sent on the old route are ignored.
     this.routeId++;
     this.outstanding = 0;
+    const recorder = this.config.traceRecorder;
+    if (recorder !== null) recorder.route(now, msg.constraints);
     this.applyUpdate(this.controller.onNetworkRouteChange(msg));
   }
 
@@ -363,6 +369,8 @@ export class CallClient {
     const msg = new ProcessInterval();
     msg.atTime = now;
     msg.pacerQueue = new Optional<DataSize>(DataSize.Bytes(this.queuedBytes));
+    const recorder = this.config.traceRecorder;
+    if (recorder !== null) recorder.process(now, msg.pacerQueue);
     this.applyUpdate(this.controller.onProcessInterval(msg));
     this.sim.schedule(new ProcessEvent(this), Unit.add(now, kProcessInterval));
   }
@@ -558,6 +566,8 @@ export class CallClient {
         rttUpdate.receiveTime = at;
         rttUpdate.roundTripTime = rtt;
         rttUpdate.smoothed = false;
+        const recorder = this.config.traceRecorder;
+        if (recorder !== null) recorder.rtt(at, rtt);
         this.applyUpdate(this.controller.onRoundTripTimeUpdate(rttUpdate));
       }
       const loss = new TransportLossReport();
@@ -566,6 +576,8 @@ export class CallClient {
       loss.endTime = at;
       loss.packetsLostDelta = <u64>rr.lost;
       loss.packetsReceivedDelta = <u64>rr.received;
+      const recorder = this.config.traceRecorder;
+      if (recorder !== null) recorder.loss(at, loss.packetsLostDelta, loss.packetsReceivedDelta);
       this.applyUpdate(this.controller.onTransportLossReport(loss));
     }
   }
@@ -600,6 +612,8 @@ export class CallClient {
     }
     msg.dataInFlight = DataSize.Bytes(this.outstanding);
     if (msg.packetFeedbacks.length == 0) return;
+    const recorder = this.config.traceRecorder;
+    if (recorder !== null) recorder.feedback(msg);
     this.applyUpdate(this.controller.onTransportPacketsFeedback(msg));
   }
 
@@ -607,10 +621,7 @@ export class CallClient {
 
   private applyUpdate(update: NetworkControlUpdate): void {
     const target = update.targetRate;
-    if (target !== null) {
-      this.lastTargetRate = target.targetRate;
-      this.lastLossRateRatio = <f64>target.networkEstimate.lossRateRatio;
-    }
+    if (target !== null) this.lastTargetRate = target.targetRate;
     const pacer = update.pacerConfig;
     if (pacer !== null) {
       this.updateDebt(this.sim.now());
@@ -681,6 +692,8 @@ export class CallClient {
       this.history.set(packet.transportSeq, new SentRecord(sent, now, this.routeId));
       this.historyOrder.push(packet.transportSeq);
       this.inFlight.push(new InFlightEntry(packet.transportSeq, bytes, this.routeId));
+      const recorder = this.config.traceRecorder;
+      if (recorder !== null) recorder.sent(sent);
       this.applyUpdate(this.controller.onSentPacket(sent));
     }
     packet.sendTime = now;
