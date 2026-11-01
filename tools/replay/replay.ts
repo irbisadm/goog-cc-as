@@ -135,6 +135,7 @@ export function replay(trace: string): string {
       msg.size = DataSize.Bytes<i64>(t.int());
       msg.dataInFlight = DataSize.Bytes<i64>(t.int());
       msg.pacingInfo = pacingInfo(t);
+      msg.priorUnackedData = DataSize.Bytes<i64>(t.int());
       update = ctrl.onSentPacket(msg);
     } else if (type == "feedback") {
       const msg = new TransportPacketsFeedback();
@@ -149,6 +150,7 @@ export function replay(trace: string): string {
         const recv = t.int();
         r.receiveTime = recv < 0 ? Timestamp.PlusInfinity : Timestamp.Micros<i64>(recv);
         r.sentPacket.pacingInfo = pacingInfo(t);
+        r.sentPacket.priorUnackedData = DataSize.Bytes<i64>(t.int());
         msg.packetFeedbacks.push(r);
       }
       update = ctrl.onTransportPacketsFeedback(msg);

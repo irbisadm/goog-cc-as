@@ -27,19 +27,21 @@ Both replays run with default field trials. If the simulator changes, the
 recorded traces change too, so `tests/golden/` must be refreshed with
 `update-golden` (which only stores outputs that the port matches).
 
-## Format (v1)
+## Format (v2)
 
 Times in microseconds, rates in bps, sizes in bytes, `-1` = unset.
 `<pacing>` is `<probe_cluster_id> <min_probes> <min_bytes>` (`-1 -1 -1` for
-non-probe packets).
+non-probe packets). `<prior_unacked>` is `SentPacket::prior_unacked_data`:
+bytes of packets without transport-wide sequence numbers sent before this one
+(v2; v1 had no such field and is no longer read).
 
 ```
-# goog-cc-trace v1
+# goog-cc-trace v2
 init <t> <min_bps> <max_bps> <start_bps> <max_total_alloc_bps> <min_total_alloc_bps> <max_padding_bps> <pacing_factor>
 avail <t> <0|1>                                   OnNetworkAvailability
 process <t> <pacer_queue_bytes>                   OnProcessInterval
-sent <t> <seq> <size> <data_in_flight> <pacing>    OnSentPacket
-feedback <t> <data_in_flight> <n> n×{<seq> <send_t> <size> <recv_t|-1> <pacing>}
+sent <t> <seq> <size> <data_in_flight> <pacing> <prior_unacked>    OnSentPacket
+feedback <t> <data_in_flight> <n> n×{<seq> <send_t> <size> <recv_t|-1> <pacing> <prior_unacked>}
                                                   OnTransportPacketsFeedback
 rtt <t> <rtt_us>                                  OnRoundTripTimeUpdate (not smoothed)
 loss <t> <lost> <received>                        OnTransportLossReport
