@@ -24,7 +24,9 @@
     "plot": "node tools/plot/plot.mjs",
     "trace:record": "node tools/replay/trace.mjs record",
     "test:trace": "node tools/replay/trace.mjs verify",
-    "trace:compare": "node tools/replay/trace.mjs compare"
+    "trace:compare": "node tools/replay/trace.mjs compare",
+    "trace:from-log": "node tools/event-log/log-to-trace.ts",
+    "test:tools": "node --test \"tools/event-log/*.test.ts\""
   },
   "devDependencies": {
     "assemblyscript": "^0.27.25"
