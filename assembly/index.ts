@@ -1,5 +1,6 @@
 // Library entry point for AssemblyScript consumers (package.json "ascMain").
-// The public API grows as components are ported.
+// The main entry is GoogCcNetworkControllerFactory / GoogCcNetworkController
+// (NetworkControllerInterface); the components are exported as well.
 export * from "./units";
 export * from "./types/optional";
 export * from "./system-wrappers/clock";
@@ -28,3 +29,6 @@ export * from "./modules/congestion-controller/goog-cc/loss-based-bwe-v2";
 export * from "./rtc-base/experiments/rate-control-settings";
 export * from "./modules/congestion-controller/goog-cc/congestion-window-pushback-controller";
 export * from "./modules/congestion-controller/goog-cc/probe-controller";
+export * from "./api/transport/network-control";
+export * from "./api/transport/goog-cc-factory";
+export * from "./modules/congestion-controller/goog-cc/goog-cc-network-control";
