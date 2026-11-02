@@ -22,6 +22,20 @@ The inputs are recorded from the scenario simulator. `npm run test:trace` (part 
 
 RtcEventLog recordings can be replayed too: `npm run trace:from-log -- <log.rtc> <out.trace>` turns a log into a trace the way upstream's `LogBasedNetworkControllerSimulation` (`rtc_tools/rtc_event_log_visualizer`) feeds GoogCC, using the [rtc-event-log](https://github.com/irbisadm/rtc-event-log) parser. Eight logs written by the upstream encoder (`tests/golden/event-log/`) replay identically to C++; they exposed and fixed a wrong default of the ALR detector.
 
+## Speed vs. upstream C++
+
+The same controller input, replayed through the wasm port (Node's V8) and through upstream C++ GoogCC (clang `-O3`). Both sides parse the trace up front and time only building the messages and calling a fresh controller per replay; a checksum over every update confirms they did the same work.
+
+| Trace | Events | C++ ns/event | wasm ns/event | wasm / C++ |
+|---|---:|---:|---:|---:|
+| `capacity-steps` | 16355 | 337 | 1466 | 4.4× |
+| `loss-10pct` | 15075 | 285 | 1278 | 4.5× |
+| `no-feedback` | 2178 | 46 | 432 | 9.3× |
+| `route-change` | 2021 | 326 | 1574 | 4.8× |
+| `remb-cap` | 5353 | 298 | 1416 | 4.8× |
+
+Intel Core i9-13900H, Node 24.22.2 (V8 13.6), clang 23.1, `asc -O3 --noAssert`; median of 7 rounds of ~400k events, repeat runs within ±5 %. The port is about 4.5× slower than native on calls with transport feedback (the outlier is the feedback-less trace, where each C++ call does almost nothing and the fixed wasm overhead per call dominates). In absolute terms that is still small: the 110 s `capacity-steps` call costs about 24 ms of CPU in wasm (5.5 ms in C++), i.e. roughly 0.02 % of one core per call. Reproduce with `npm run bench` (needs `cpp/`, CMake, Ninja and abseil, like `trace:compare`).
+
 ## Estimate vs. link capacity
 
 ![GoogCC target rate vs. link capacity](docs/estimate-vs-capacity.svg)
@@ -128,6 +142,7 @@ node tests/run.js units Clamp   # ...and only tests whose name contains "Clamp"
 npm run plot                    # docs/estimate-vs-capacity.svg from the scenario simulator
 npm run test:trace              # port vs stored upstream C++ outputs (tests/golden)
 npm run trace:compare           # port vs upstream C++ built from cpp/ (CMake, Ninja, system abseil)
+npm run bench                   # speed of the wasm port vs upstream C++ (tools/bench, needs cpp/)
 npm run trace:from-log -- log.rtc out.trace   # RtcEventLog -> trace (see tools/replay/readme.md)
 node tools/replay/trace.mjs compare-file out.trace   # port vs upstream C++ for any trace
 npm run test:tools              # TransportFeedbackAdapter port + converter tests

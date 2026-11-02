@@ -18,6 +18,7 @@ npm test                          # node tests/run.js: compile + run every tests
 node tests/run.js <spec> [test]   # filter by spec path substring, then by test name substring
 npm run asbuild                   # asc assembly/index.ts (debug + release) into build/
 npm run test:trace                # replay simulator traces through the port, compare with tests/golden (C++ outputs)
+npm run bench                     # wasm port vs upstream C++ speed (tools/bench, needs cpp/)
 npm run trace:compare             # same, against upstream C++ GoogCC built from cpp/ via tools/cpp-replay
 npm run trace:from-log -- a.rtc b.trace   # RtcEventLog -> trace (tools/event-log, parser: @irbisadm/rtc-event-log)
 npm run test:tools                # node --test tools/event-log/*.test.ts
