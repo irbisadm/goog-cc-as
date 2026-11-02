@@ -29,3 +29,14 @@ target_link_libraries(goog_cc_replay PRIVATE
   absl::strings absl::str_format absl::flat_hash_map absl::flat_hash_set
   absl::optional absl::algorithm_container absl::any_invocable absl::nullability
   absl::check absl::log absl::inlined_vector absl::base absl::memory absl::cleanup)
+
+# Speed benchmark (tools/bench): same sources, its own driver.
+add_executable(goog_cc_bench bench.cc stubs.cc ${WEBRTC_SOURCES}
+  "${GEN}/experiments/registered_field_trials.h")
+target_include_directories(goog_cc_bench PRIVATE "${WEBRTC}" "${GEN}")
+target_compile_definitions(goog_cc_bench PRIVATE WEBRTC_POSIX WEBRTC_LINUX)
+target_compile_options(goog_cc_bench PRIVATE -w)
+target_link_libraries(goog_cc_bench PRIVATE
+  absl::strings absl::str_format absl::flat_hash_map absl::flat_hash_set
+  absl::optional absl::algorithm_container absl::any_invocable absl::nullability
+  absl::check absl::log absl::inlined_vector absl::base absl::memory absl::cleanup)
