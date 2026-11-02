@@ -1,0 +1,16 @@
+update 1000052000 target=300000 loss=0 rtt=0 limited=1 cwnd_reduce=0.000000 pacer=3750/40000/0
+update 1000252000 target=300000 loss=0 rtt=25225967789 limited=1 cwnd_reduce=0.000000 pacer=3750/40000/0
+update 1000332000 target=300000 loss=0 rtt=25225967789 limited=0 cwnd_reduce=0.000000 pacer=3750/40000/0
+update 1000677000 target=300000 loss=0 rtt=771754150 limited=0 cwnd_reduce=0.000000 pacer=3750/40000/0
+update 1002515000 target=300000 loss=0 rtt=0 limited=0 cwnd_reduce=0.000000 pacer=3750/40000/0
+update 1003327000 target=240000 loss=0 rtt=0 limited=0 cwnd_reduce=0.000000 pacer=3000/40000/0
+update 1004327000 target=192000 loss=0 rtt=0 limited=0 cwnd_reduce=0.000000 pacer=2400/40000/0
+update 1005313000 target=300000 loss=0 rtt=0 limited=0 cwnd_reduce=0.000000 pacer=3750/40000/0
+update 1005327000 target=240000 loss=0 rtt=0 limited=0 cwnd_reduce=0.000000 pacer=3000/40000/0
+update 1006169000 target=301000 loss=0 rtt=0 limited=0 cwnd_reduce=0.000000 pacer=1656/40000/0
+update 1006208000 target=302000 loss=0 rtt=0 limited=0 cwnd_reduce=0.000000 pacer=1661/40000/0
+update 1006251000 target=303001 loss=0 rtt=0 limited=0 cwnd_reduce=0.000000 pacer=1667/40000/0
+update 1006264000 target=303001 loss=0 rtt=0 limited=1 cwnd_reduce=0.000000 pacer=1667/40000/0
+update 1006295000 target=304029 loss=0 rtt=0 limited=1 cwnd_reduce=0.000000 pacer=1672/40000/0
+update 1006353000 target=305389 loss=0 rtt=0 limited=1 cwnd_reduce=0.000000 pacer=1680/40000/0
+update 1006410000 target=306732 loss=0 rtt=0 limited=1 cwnd_reduce=0.000000 pacer=1687/40000/0

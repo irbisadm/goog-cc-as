@@ -1,5 +1,34 @@
-// The entry file of your WebAssembly module.
-
-export function add(a: i32, b: i32): i32 {
-  return a + b;
-}
+// Library entry point for AssemblyScript consumers (package.json "ascMain").
+// The main entry is GoogCcNetworkControllerFactory / GoogCcNetworkController
+// (NetworkControllerInterface); the components are exported as well.
+export * from "./units";
+export * from "./types/optional";
+export * from "./system-wrappers/clock";
+export * from "./api/environment/environment";
+export * from "./api/transport/ecn-marking";
+export * from "./rtc-base/experiments/alr-experiment";
+export * from "./api/transport/network-types";
+export * from "./modules/pacing/interval-budget";
+export * from "./modules/congestion-controller/goog-cc/alr-detector";
+export * from "./modules/congestion-controller/goog-cc/bitrate-estimator";
+export * from "./modules/congestion-controller/goog-cc/acknowledged-bitrate-estimator-interface";
+export * from "./modules/congestion-controller/goog-cc/acknowledged-bitrate-estimator";
+export * from "./modules/congestion-controller/goog-cc/robust-throughput-estimator";
+export * from "./modules/congestion-controller/goog-cc/link-capacity-estimator";
+export * from "./modules/congestion-controller/goog-cc/send-side-bandwidth-estimation";
+export * from "./api/transport/bandwidth-usage";
+export * from "./api/network-state-predictor";
+export * from "./modules/remote-bitrate-estimator/include/bwe-defines";
+export * from "./modules/remote-bitrate-estimator/aimd-rate-control";
+export * from "./modules/congestion-controller/goog-cc/delay-increase-detector-interface";
+export * from "./modules/congestion-controller/goog-cc/inter-arrival-delta";
+export * from "./modules/congestion-controller/goog-cc/trendline-estimator";
+export * from "./modules/congestion-controller/goog-cc/probe-bitrate-estimator";
+export * from "./modules/congestion-controller/goog-cc/delay-based-bwe";
+export * from "./modules/congestion-controller/goog-cc/loss-based-bwe-v2";
+export * from "./rtc-base/experiments/rate-control-settings";
+export * from "./modules/congestion-controller/goog-cc/congestion-window-pushback-controller";
+export * from "./modules/congestion-controller/goog-cc/probe-controller";
+export * from "./api/transport/network-control";
+export * from "./api/transport/goog-cc-factory";
+export * from "./modules/congestion-controller/goog-cc/goog-cc-network-control";
