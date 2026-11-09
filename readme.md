@@ -6,9 +6,9 @@ A port of libwebrtc's send-side congestion control (**GoogCC**) from C++ to [Ass
 
 The goal is to run the same bandwidth-estimation logic that Chromium uses — outside the browser and outside C++: in an SFU written in Node.js/Deno/Bun, in a browser-side simulator, or in a test harness that replays transport-feedback traces and plots the estimate against the real link capacity.
 
-## Verified bit-exact against upstream C++
+## Verified against upstream C++
 
-The port is checked against upstream C++ GoogCC (libwebrtc M154) by replaying the same controller input through both and comparing every `NetworkControlUpdate` (target rate, loss, RTT, pacer windows, congestion window, probe clusters):
+The port is checked against upstream C++ GoogCC (libwebrtc M154) by replaying the same controller input through both and comparing the printed output of each non-empty `NetworkControlUpdate`: target rate, loss, RTT, the bandwidth-limited flag, `cwnd_reduce_ratio`, pacer windows, congestion window and probe clusters. Values are compared as formatted: loss as `round(loss_rate_ratio * 255)`, `cwnd_reduce_ratio` to six decimals, the rest as integers in bps, µs and bytes. Internal state and the fields not printed (`at_time`, the deprecated `network_estimate.bandwidth`) are not compared. Inputs come from the scenario simulator and from logs written by the upstream encoder, with default field trials.
 
 | Scenario | Updates | Port vs C++ |
 |---|---|---|
