@@ -1,25 +1,36 @@
 {
-  "name": "congestion_controller_as",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "goog-cc-as",
+  "version": "0.1.0",
+  "description": "Port of libwebrtc's GoogCC send-side congestion control to AssemblyScript (WIP)",
+  "private": true,
+  "license": "BSD-3-Clause",
+  "author": "Igor Sheko <i@irbisadm.dev>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/irbisadm/goog-cc-as.git"
+  },
+  "type": "module",
+  "ascMain": "assembly/index.ts",
+  "files": [
+    "assembly",
+    "LICENSE",
+    "readme.md"
+  ],
   "scripts": {
-    "test": "node tests",
+    "test": "node tests/run.js",
     "asbuild:debug": "asc assembly/index.ts --target debug",
     "asbuild:release": "asc assembly/index.ts --target release",
     "asbuild": "npm run asbuild:debug && npm run asbuild:release",
-    "start": "npx serve ."
+    "plot": "node tools/plot/plot.mjs",
+    "trace:record": "node tools/replay/trace.mjs record",
+    "test:trace": "node tools/replay/trace.mjs verify",
+    "trace:compare": "node tools/replay/trace.mjs compare",
+    "bench": "node tools/bench/bench.mjs",
+    "trace:from-log": "node tools/event-log/log-to-trace.ts",
+    "test:tools": "node --test \"tools/event-log/*.test.ts\""
   },
-  "author": "Igor Sheko <i@irbisadm.dev>",
-  "license": "MIT",
   "devDependencies": {
+    "@irbisadm/rtc-event-log": "^0.1.0",
     "assemblyscript": "^0.27.25"
-  },
-  "type": "module",
-  "exports": {
-    ".": {
-      "import": "./build/release.js",
-      "types": "./build/release.d.ts"
-    }
   }
 }
